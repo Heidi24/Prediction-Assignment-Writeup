@@ -114,6 +114,39 @@ rpConMatrix <- confusionMatrix(rpPreds, as.factor(testing$classe))
 rpConMatrix
 ```
 
+    ## Confusion Matrix and Statistics
+
+    ##           Reference
+    ## Prediction    A    B    C    D    E
+    ##          A 1526  466  473  423  165
+    ##          B   35  391   31  171  138
+    ##          C  109  282  522  370  294
+    ##          D    0    0    0    0    0
+    ##          E    4    0    0    0  485
+
+    ## Overall Statistics
+                                         
+    ##                Accuracy : 0.4969         
+    ##                  95% CI : (0.484, 0.5097)
+    ##     No Information Rate : 0.2845         
+    ##     P-Value [Acc > NIR] : < 2.2e-16      
+                                         
+    ##                   Kappa : 0.3425         
+                                         
+    ##  Mcnemar's Test P-Value : NA             
+
+    ## Statistics by Class:
+
+    ##                      Class: A Class: B Class: C Class: D Class: E
+    ## Sensitivity            0.9116  0.34328   0.5088   0.0000  0.44824
+    ## Specificity            0.6374  0.92099   0.7829   1.0000  0.99917
+    ## Pos Pred Value         0.4998  0.51044   0.3310      NaN  0.99182
+    ## Neg Pred Value         0.9477  0.85388   0.8830   0.8362  0.88936
+    ## Prevalence             0.2845  0.19354   0.1743   0.1638  0.18386
+    ## Detection Rate         0.2593  0.06644   0.0887   0.0000  0.08241
+    ## Detection Prevalence   0.5188  0.13016   0.2680   0.0000  0.08309
+    ## Balanced Accuracy      0.7745  0.63213   0.6458   0.5000  0.72371
+
 ```{r}
 # Accuracy Evaluation
 rpAccuracy = rpConMatrix$overall[[1]]
