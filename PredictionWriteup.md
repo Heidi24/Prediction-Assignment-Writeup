@@ -85,6 +85,20 @@ test <- test[, -mostlyNAs]
 rpModelFit <- train(classe ~ ., method="rpart", data=training)
 rpModelFit$finalModel
 ```
+    ## n= 13737 
+
+    ## node), split, n, loss, yval, (yprob)
+         ##  * denotes terminal node
+
+     ## 1) root 13737 9831 A (0.28 0.19 0.17 0.16 0.18)  
+       ## 2) roll_belt< 130.5 12581 8685 A (0.31 0.21 0.19 0.18 0.11)  
+         ## 4) pitch_forearm< -33.55 1112    8 A (0.99 0.0072 0 0 0) *
+         ## 5) pitch_forearm>=-33.55 11469 8677 A (0.24 0.23 0.21 0.2 0.12)  
+          ## 10) magnet_dumbbell_y< 432.5 9592 6872 A (0.28 0.18 0.24 0.19 0.11)  
+            ## 20) roll_forearm< 122.5 5951 3523 A (0.41 0.18 0.19 0.17 0.059) *
+            ## 21) roll_forearm>=122.5 3641 2437 C (0.08 0.18 0.33 0.23 0.18) *
+          ## 11) magnet_dumbbell_y>=432.5 1877  948 B (0.038 0.49 0.045 0.23 0.19) *
+       ## 3) roll_belt>=130.5 1156   10 E (0.0087 0 0 0 0.99) *
 
 ```{r}
 # Plot the model
