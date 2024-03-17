@@ -58,7 +58,9 @@ testing <- train[-inTrain,]
 
 summary(training$classe)
 ```
-
+  # Length     Class      Mode 
+  #  13737 character character 
+    
 #### Clean data
 ```{r}
 # Remove useless time-related & recording variables, and the row index variable X.
