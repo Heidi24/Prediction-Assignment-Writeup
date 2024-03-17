@@ -152,12 +152,15 @@ rpConMatrix
 rpAccuracy = rpConMatrix$overall[[1]]
 percent(rpAccuracy)
 ```
+
+    ## [1] "50%"
 Low accuracy in the DT model.
 
 ##### Expected Out of Sample Error
 ```{r}
 percent(1.00-rpAccuracy)
 ```
+    ## [1] "50%"
 
 #### 3.2 Random Forests
 ```{r}
@@ -166,6 +169,21 @@ rfModelFit <- train(classe ~., method="rf", data=training, trControl=fitControl)
 rfModelFit$finalModel
 ```
 
+    ## Call:
+     ## randomForest(x = x, y = y, mtry = param$mtry) 
+                   ## Type of random forest: classification
+                         ## Number of trees: 500
+    ## No. of variables tried at each split: 27
+
+            ## OOB estimate of  error rate: 0.72%
+    ## Confusion matrix:
+    ##      A    B    C    D    E class.error
+    ## A 3900    4    0    0    2 0.001536098
+    ## B   20 2631    7    0    0 0.010158014
+    ## C    0   11 2376    9    0 0.008347245
+    ## D    0    1   29 2217    5 0.015541741
+    ## E    0    1    3    7 2514 0.004356436
+
 ```{r}
 # Predict `classe` for test data
 rfPreds <- predict(rfModelFit, newdata=testing)
@@ -173,17 +191,55 @@ rfConMatrix <- confusionMatrix(rfPreds, as.factor(testing$classe))
 rfConMatrix
 ```
 
+    Confusion Matrix and Statistics
+
+          Reference
+Prediction    A    B    C    D    E
+         A 1667   12    0    0    0
+         B    4 1125    8    0    0
+         C    3    1 1016   12    0
+         D    0    1    2  952    2
+         E    0    0    0    0 1080
+
+Overall Statistics
+                                          
+               Accuracy : 0.9924          
+                 95% CI : (0.9898, 0.9944)
+    No Information Rate : 0.2845          
+    P-Value [Acc > NIR] : < 2.2e-16       
+                                          
+                  Kappa : 0.9903          
+                                          
+ Mcnemar's Test P-Value : NA              
+
+Statistics by Class:
+
+                     Class: A Class: B Class: C Class: D Class: E
+Sensitivity            0.9958   0.9877   0.9903   0.9876   0.9982
+Specificity            0.9972   0.9975   0.9967   0.9990   1.0000
+Pos Pred Value         0.9929   0.9894   0.9845   0.9948   1.0000
+Neg Pred Value         0.9983   0.9971   0.9979   0.9976   0.9996
+Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
+Detection Rate         0.2833   0.1912   0.1726   0.1618   0.1835
+Detection Prevalence   0.2853   0.1932   0.1754   0.1626   0.1835
+Balanced Accuracy      0.9965   0.9926   0.9935   0.9933   0.9991
+
 ```{r}
 # Accuracy Evaluation
 rfAccuracy = rfConMatrix$overall[[1]]
 percent(rfAccuracy)
 ```
+
+     ## [1] "99%"
+     
 Higher accuracy in the RF model than in the DT model.
 
 ##### Expected Out of Sample Error
 ```{r}
 percent(1.00-rfAccuracy)
 ```
+
+     ## [1] "1%"
 
 ### 4 Conclusion
 The RF model was chosen for a better performance than the DT model.
@@ -193,3 +249,5 @@ The RF model was chosen for a better performance than the DT model.
 submissionPreds <- predict(rfModelFit, newdata=test)
 submissionPreds
 ```
+     ## [1] B A B A A E D B A A B C B A E E A B B B
+    ## Levels: A B C D E
