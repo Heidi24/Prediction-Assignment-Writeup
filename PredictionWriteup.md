@@ -58,8 +58,8 @@ testing <- train[-inTrain,]
 
 summary(training$classe)
 ```
-  # Length     Class      Mode 
-  #  13737 character character 
+  ## Length     Class      Mode 
+  ##  13737 character character 
     
 #### Clean data
 ```{r}
