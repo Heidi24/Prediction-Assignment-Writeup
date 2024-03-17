@@ -1,0 +1,144 @@
+---
+title: "Prediction Assignment Writeup"
+author: "Heidi Tang"
+date: "3/17/24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1 Executive Summary
+
+People often quantify how much of a certain task that they work on, but tend to ignore how well they finish it. This report tries to predict the manner in which they did the exercise. The data are from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. The target variable `classe` is in the training set, and other variables are used for predictions.
+
+Through cross validation (CV) at a training-test data split ratio of 7:3, the final "best" model was found in three steps. First, remove useless variables in terms of accelerometer reading and those with many NA values. As a result, only 53 variables remained. Second, apply a decision tree (DT) model to predict the targeted manner. With this model, the expected out of sample error reached 50%, which was very high. Last, use random forests (RF) with 3-fold CV to conduct the same prediction. Compared to the DT, the expected out of sample error of this model was much lower, with only 1%, which implied that the RF model performed much better than the DT model. Therefore, the RF model was chosen to predict the manner. 
+
+Besides, the selected RF model was applied to predict 20 different test cases.
+
+#### Load libraries
+```{r results="hide", warning=FALSE, error=FALSE, message=FALSE}
+library(caret)
+library(rpart)
+library(rattle)
+library(scales)
+library(randomForest)
+```
+
+### 2 Training vs. Test Split
+
+#### Set seed
+```{r results="hide", warning=FALSE, error=FALSE, message=FALSE}
+set.seed(1357)
+```
+
+#### Load training and test data
+```{r}
+train_data_url = 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv'
+test_data_url = 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv'
+
+if (file.exists('pml-training.csv') == FALSE) {
+  download.file(train_data_url, 'pml-training.csv')
+}
+if (file.exists('pml-testing.csv') == FALSE) {
+  download.file(test_data_url, 'pml-testing.csv')
+}
+
+train <- read.csv('pml-training.csv', na.strings=c("","NA"))
+test <- read.csv('pml-testing.csv', na.strings=c("","NA"))
+```
+
+#### CV with tra.: test data = 0.7: 0.3
+The data are split into (1) training data and (2) test data (for cross validation).
+```{r}
+inTrain <- createDataPartition(train$classe, p=.7, list=FALSE)
+training <- train[inTrain,]
+testing <- train[-inTrain,]
+
+summary(training$classe)
+```
+
+#### Clean data
+```{r}
+# Remove useless time-related & recording variables, and the row index variable X.
+training <- training[, -c(1:7)]
+testing <- testing[, -c(1:7)]
+test <- test[, -c(1:7)]
+```
+
+```{r}
+# Removed variables with many missing values. NAs and blank fields are marked as NA.
+mostlyNAs <- which(colSums(is.na(training)) > nrow(training)/2)
+training <- training[, -mostlyNAs]
+testing <- testing[, -mostlyNAs]
+test <- test[, -mostlyNAs]
+```
+
+### 3 Modeling: Decision Trees vs. Random Forests
+
+#### 3.1 Decision Trees
+```{r}
+# Train decision tree model
+rpModelFit <- train(classe ~ ., method="rpart", data=training)
+rpModelFit$finalModel
+```
+
+```{r}
+# Plot the model
+fancyRpartPlot(rpModelFit$finalModel, sub='')
+```
+
+```{r}
+# Predict `classe` for test data
+rpPreds <- predict(rpModelFit, testing)
+rpConMatrix <- confusionMatrix(rpPreds, as.factor(testing$classe))
+rpConMatrix
+```
+
+```{r}
+# Accuracy Evaluation
+rpAccuracy = rpConMatrix$overall[[1]]
+percent(rpAccuracy)
+```
+Low accuracy in the DT model.
+
+##### Expected Out of Sample Error
+```{r}
+percent(1.00-rpAccuracy)
+```
+
+#### 3.2 Random Forests
+```{r}
+fitControl <- trainControl(method="cv", number=3, verboseIter=F)
+rfModelFit <- train(classe ~., method="rf", data=training, trControl=fitControl)
+rfModelFit$finalModel
+```
+
+```{r}
+# Predict `classe` for test data
+rfPreds <- predict(rfModelFit, newdata=testing)
+rfConMatrix <- confusionMatrix(rfPreds, as.factor(testing$classe))
+rfConMatrix
+```
+
+```{r}
+# Accuracy Evaluation
+rfAccuracy = rfConMatrix$overall[[1]]
+percent(rfAccuracy)
+```
+Higher accuracy in the RF model than in the DT model.
+
+##### Expected Out of Sample Error
+```{r}
+percent(1.00-rfAccuracy)
+```
+
+### 4 Conclusion
+The RF model was chosen for a better performance than the DT model.
+
+### 5 Predictions in 20 Test Cases
+```{r}
+submissionPreds <- predict(rfModelFit, newdata=test)
+submissionPreds
+```
