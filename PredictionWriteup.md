@@ -104,6 +104,8 @@ rpModelFit$finalModel
 # Plot the model
 fancyRpartPlot(rpModelFit$finalModel, sub='')
 ```
+![](https://github.com/Heidi24/Prediction-Assignment-Writeup/blob/main/fig1.png)
+
 
 ```{r}
 # Predict `classe` for test data
